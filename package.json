@@ -1,16 +1,8 @@
 {
-  "name": "baoding-assistant",
+  "name": "baoding-web",
   "version": "1.0.0",
-  "description": "保定风物志 · 百事通后端代理",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "keywords": ["baoding", "deepseek", "assistant"],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
-    "dotenv": "^16.3.1"
+    "express": "^4.19.2",
+    "dotenv": "^16.4.5"
   }
 }

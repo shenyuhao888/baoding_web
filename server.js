@@ -3,23 +3,29 @@ const express = require('express');
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 3000;
 
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 
-// 1. 先开静态资源，优先读本地html文件
-app.use(express.static(path.join(__dirname)));
-
-// 2. 解析json
+// 优先加载静态文件（所有html、视频、资源全部自动识别）
+app.use(express.static(__dirname));
 app.use(express.json());
 
-// 3. 首页兜底，强制返回index.html
+// 首页根路径
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.resolve(__dirname, 'index.html'));
 });
 
-// 4. 你的AI聊天后端接口
+// 万能子页面兜底：/保定军校 → 自动加载 保定军校.html
+app.get('/:filename', (req, res) => {
+    const fileName = req.params.filename;
+    const fullPath = path.resolve(__dirname, `${fileName}.html`);
+    res.sendFile(fullPath, (err) => {
+        if (err) return res.status(404).send('页面不存在');
+    });
+});
+
+// 完整AI聊天后端接口
 app.post('/api/chat', async (req, res) => {
     const { messages, mode } = req.body;
 
@@ -34,7 +40,7 @@ app.post('/api/chat', async (req, res) => {
 
     try {
         if (!DEEPSEEK_API_KEY) {
-            return res.status(500).json({error: "缺少环境变量DEEPSEEK_API_KEY"});
+            return res.status(500).json({error: "缺少后端API密钥配置"});
         }
 
         const response = await fetch(DEEPSEEK_API_URL, {
@@ -77,11 +83,6 @@ app.post('/api/chat', async (req, res) => {
         console.error(error);
         res.status(500).json({ error: error.message });
     }
-});
-
-// 本地启动用，Vercel会自动接管
-app.listen(port, () => {
-  console.log(`本地运行在 http://localhost:${port}`);
 });
 
 module.exports = app;
