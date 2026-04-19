@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>保定文物典藏 | 燕赵瑰宝 · 3D数字展厅</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ========== 全局重置 (解决白边+性能优化) ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* 关键：禁用元素默认的拖拽/选中，减少不必要的事件 */
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        
+        :root {
+            --primary: #8B2323;
+            --primary-dark: #6B1C1C;
+            --gold: #C9A961;
+            --gold-light: #E8D5A3;
+            --bg-cream: rgba(248, 245, 240, 0.85);
+            --bg-dark: #1A1512;
+            --text-primary: #2C2416;
+            --text-secondary: #5C5040;
+            --text-light: #8C8070;
+        }
+        
+        /* ========== 全局body样式 (核心优化：背景图性能) ========== */
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            color: var(--text-primary);
+            line-height: 1.6;
+            /* 优化：替换fixed背景为伪元素，避免持续重绘 */
+            background-color: #1A1512; /* 兜底色，减少加载闪烁 */
+            margin: 0 !important;
+            padding: 0 !important;
+            padding-top: 70px !important;
+            /* 禁用滚动回弹，减少不必要的渲染 */
+            overscroll-behavior: none;
+        }
+        
+        /* 优化：用伪元素承载背景图，替代body的fixed背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('../Chinese_style/bei_jing/2.JPG');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.85;
+            z-index: -1;
+            /* 关键：硬件加速，减少重绘 */
+            transform: translateZ(0);
+            will-change: transform;
+        }
+        
+        /* ========== 全局导航样式 (优化：减少hover重绘) ========== */
+        .global-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(10, 10, 12, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(201, 169, 97, 0.3);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            box-sizing: border-box;
+            transition: opacity 0.2s ease;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-logo a {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #E8D5A3;
+            text-decoration: none;
+            letter-spacing: 4px;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+            font-family: 'Noto Serif SC', 'Times New Roman', serif;
+        }
+        .nav-logo span {
+            color: #C9A961;
+            font-size: 1.4rem;
+            margin-left: 4px;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        .nav-links a {
+            color: #f0ebe4;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            padding: 8px 0;
+            position: relative;
+            transition: color 0.2s;
+            /* 优化：提前渲染，减少hover时的重绘 */
+            will-change: color;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #C9A961;
+            transition: width 0.3s;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: #E8D5A3;
+        }
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+        .auth-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .auth-btn {
+            background: transparent;
+            border: 1.5px solid #C9A961;
+            color: #E8D5A3;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            backdrop-filter: blur(4px);
+            letter-spacing: 1px;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        .auth-btn:hover {
+            background: #C9A961;
+            color: #1A1512;
+            border-color: #C9A961;
+        }
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .user-btn {
+            background: rgba(201, 169, 97, 0.2);
+            border: 1px solid #C9A961;
+            color: #E8D5A3;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 48px;
+            background: rgba(20, 18, 16, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid #C9A961;
+            border-radius: 16px;
+            min-width: 140px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 10001;
+            overflow: hidden;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        .dropdown-content a {
+            color: #E8D5A3;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+            border-bottom: 1px solid rgba(201,169,97,0.2);
+        }
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+        .dropdown-content a:hover {
+            background: rgba(201, 169, 97, 0.25);
+        }
+        .user-dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        /* ========== 移动端适配 (统一管理) ========== */
+        @media (max-width: 768px) {
+            .global-nav {
+                padding: 0 16px;
+                height: 60px;
+            }
+            .nav-logo a { font-size: 1.3rem; }
+            .nav-links { gap: 16px; }
+            .nav-links a { font-size: 0.9rem; }
+            .auth-btn { padding: 5px 14px; font-size: 0.9rem; }
+            
+            body { 
+                padding-top: 60px !important; 
+            }
+            
+            .header {
+                padding: 40px 20px 60px;
+            }
+            .header h1 {
+                letter-spacing: 4px;
+            }
+            
+            .container {
+                padding: 40px 16px 60px;
+            }
+            
+            .artifacts-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .artifact-image {
+                height: 220px;
+            }
+            
+            .model-title {
+                font-size: 16px;
+                top: 20px;
+                white-space: nowrap;
+                padding: 4px 16px;
+                background: rgba(0,0,0,0.7);
+            }
+            .model-close {
+                width: 40px;
+                height: 40px;
+                top: 20px;
+                right: 20px;
+                font-size: 22px;
+            }
+            .model-hint {
+                display: none;
+            }
+        }
+        
+        /* ========== 页面头部样式 (优化：减少重绘) ========== */
+        .header {
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #2D2520 100%);
+            padding: 60px 20px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin: 0 !important;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30L30 0z' fill='%23C9A961' fill-opacity='0.03'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            color: var(--bg-dark);
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        .header h1 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: #fff;
+            margin-bottom: 16px;
+            letter-spacing: 8px;
+        }
+        
+        .header h1 span {
+            color: var(--gold);
+        }
+        
+        .header-subtitle {
+            color: var(--gold-light);
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            opacity: 0.9;
+        }
+        
+        .header-line {
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 24px auto 0;
+        }
+        
+        .decorative-border {
+            height: 60px;
+            background: transparent;
+            margin-top: -30px;
+            position: relative;
+            z-index: 2;
+            border: none;
+            outline: none;
+        }
+        
+        .decorative-border::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 60px;
+            background: transparent;
+            border-radius: 0 0 100px 100px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 24px 80px;
+            background: transparent;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        .intro {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 60px;
+            background: transparent !important;
+            padding: 0;
+        }
+        
+        .intro h2 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+        
+        .intro p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+        
+        .artifacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+            margin-top: 40px;
+            /* 优化：减少grid布局的重排开销 */
+            contain: layout paint;
+        }
+        
+        .artifact-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(44, 36, 22, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            /* 核心优化：限制卡片的重绘范围 + 硬件加速 */
+            contain: layout paint;
+            transform: translateZ(0);
+            will-change: transform, box-shadow;
+        }
+        
+        .artifact-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(139, 35, 35, 0.15);
+        }
+        
+        .artifact-image {
+            height: 280px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 修复：增加柔和背景色，配合完整显示图片，避免裁剪留白突兀 */
+            background: #EADECD;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        .artifact-image img {
+            width: 100%;
+            height: 100%;
+    
+            object-fit: contain;
+            transition: transform 0.4s ease;
+            /* 优化：图片懒加载 + 硬件加速 */
+            will-change: transform;
+            transform: translateZ(0);
+            /* 增加轻微阴影增加质感，同时保持图片完整展示 */
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.08));
+        }
+        
+        .artifact-card:hover .artifact-image img {
+            transform: scale(1.02);
+        }
+        
+        .artifact-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--primary);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 2;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        .artifact-content {
+            padding: 24px;
+        }
+        
+        .artifact-period {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            color: var(--bg-dark);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        .artifact-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.4rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .artifact-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+        
+        .artifact-desc {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            border-top: 1px solid #F0EDE8;
+            padding-top: 16px;
+        }
+        
+        .artifact-meta {
+            display: flex;
+            gap: 20px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #F0EDE8;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        .meta-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--gold);
+        }
+        
+        .model-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(8px);
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        .model-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .model-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--gold);
+            border: none;
+            border-radius: 50%;
+            color: #1a1512;
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background 0.2s;
+            font-weight: bold;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        .model-close:hover {
+            transform: rotate(90deg);
+            background: #e5b874;
+        }
+        
+        #model-container {
+            width: 90%;
+            height: 90%;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #0a0a14;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        .model-title {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--gold-light);
+            font-family: 'Noto Serif SC', serif;
+            font-size: 26px;
+            font-weight: 500;
+            text-align: center;
+            z-index: 10000;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            padding: 8px 24px;
+            border-radius: 60px;
+            letter-spacing: 2px;
+            white-space: nowrap;
+            pointer-events: none;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        .footer {
+            background: var(--bg-dark);
+            padding: 60px 20px;
+            text-align: center;
+            margin-top: 60px;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .footer h3 {
+            font-family: 'Noto Serif SC', serif;
+            color: var(--gold);
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            letter-spacing: 4px;
+        }
+        
+        .footer p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+        
+        .footer-divider {
+            width: 60px;
+            height: 1px;
+            background: var(--gold);
+            margin: 24px auto;
+            opacity: 0.5;
+        }
+        
+        .model-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            color: #ccc;
+            font-family: monospace;
+            z-index: 10000;
+            pointer-events: none;
+            /* 硬件加速 */
+            transform: translateZ(0);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .artifact-card {
+            animation: fadeInUp 0.6s ease-out forwards;
+
+            animation-fill-mode: both;
+        }
+        .artifact-card:nth-child(1) { animation-delay: 0.05s; }
+        .artifact-card:nth-child(2) { animation-delay: 0.12s; }
+        .artifact-card:nth-child(3) { animation-delay: 0.19s; }
+        .artifact-card:nth-child(4) { animation-delay: 0.26s; }
+        .artifact-card:nth-child(5) { animation-delay: 0.33s; }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+<!-- ========== 全局导航栏 (统一组件) ========== -->
+<nav class="global-nav" id="globalNav">
+    <div class="nav-logo">
+        <a href="index.html">保定·风物志<span>⚜️</span></a>
+    </div>
+    <div class="nav-links">
+        <a href="index.html">首页</a>
+        <a href="jies.html">保定之韵</a>
+        <a href="renwu.html">人物志</a>
+        <a href="wenwu.html" class="active">博物录</a>
+        <a href="assistant.html">百事通</a>
+    </div>
+    <div class="auth-area" id="authArea">
+        <!-- 由JS动态渲染 -->
+    </div>
+</nav>
+
+<!-- 原有页面内容 (完全保留) -->
+<header class="header">
+    <div class="header-content">
+        <div class="header-badge">保定博物 · 满城汉墓瑰宝</div>
+        <h1>燕赵<span>·</span>瑰宝</h1>
+        <p class="header-subtitle">汉代风华 · 元瓷绝唱 | 保定文物精选</p>
+        <div class="header-line"></div>
+    </div>
+</header>
+
+<!-- 保留装饰边框元素但已修改样式为透明，避免布局错乱 -->
+<div class="decorative-border"></div>
+
+<main class="container">
+    <div class="intro">
+        <h2>穿越千年 · 感悟历史</h2>
+        <p>保定，历史悠久，文化底蕴深厚，是燕赵文化的核心区域。这里精选了满城汉墓与保定窖藏出土的五件稀世珍宝，每一件文物都凝聚着古代工匠的非凡智慧与美学造诣。</p>
+        <p style="margin-top: 12px; color: var(--primary); font-size: 0.9rem;">✨ 点击任意文物卡片，沉浸式鉴赏3D模型</p>
+    </div>
+    
+    <div class="artifacts-grid" id="artifactGrid"></div>
+</main>
+
+<div class="model-modal" id="modelModal">
+    <div class="model-title" id="modelTitle">文物3D模型</div>
+    <button class="model-close" id="closeModel">×</button>
+    <div id="model-container"></div>
+    <div class="model-hint">🖱️ 鼠标拖拽旋转 | 右键平移 | 滚轮缩放 | 自动旋转</div>
+</div>
+
+<footer class="footer">
+    <div class="footer-content">
+        <h3>保定博物 · 燕赵典藏</h3>
+        <div class="footer-divider"></div>
+        <p>探索历史，传承文化<br>让文物说话，让历史发声</p>
+        <p style="margin-top: 20px; opacity: 0.5;">© 2026 保定博物 · 数字文物</p>
+    </div>
+</footer>
+
+<!-- 登录状态管理脚本 (优化：延迟执行，避免页面加载阻塞) -->
+<script>
+    // 优化：页面加载完成后再执行，避免阻塞渲染
+    window.addEventListener('DOMContentLoaded', function() {
+        const authArea = document.getElementById('authArea');
+        
+        function getLoginState() {
+            return localStorage.getItem('bd_loggedIn') === 'true';
+        }
+        function getUsername() {
+            return localStorage.getItem('bd_username') || '博物之友';
+        }
+        function setLoginState(username = '博物之友') {
+            localStorage.setItem('bd_loggedIn', 'true');
+            localStorage.setItem('bd_username', username);
+        }
+        function clearLoginState() {
+            localStorage.removeItem('bd_loggedIn');
+            localStorage.removeItem('bd_username');
+        }
+        
+        function renderAuth() {
+            if (!authArea) return;
+            const isLogged = getLoginState();
+            if (isLogged) {
+                const username = getUsername();
+                authArea.innerHTML = `
+                    <div class="user-dropdown">
+                        <div class="user-btn">
+                            <span>👤 ${username}</span>
+                            <span style="font-size:12px;">▼</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <a href="#" id="logoutBtn">🚪 退出登录</a>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    clearLoginState();
+                    renderAuth();
+                });
+            } else {
+                authArea.innerHTML = `
+                    <button class="auth-btn" id="loginBtn">登录</button>
+                    <button class="auth-btn" id="registerBtn">注册</button>
+                `;
+                document.getElementById('loginBtn')?.addEventListener('click', function() {
+                    setLoginState('燕赵访客');
+                    renderAuth();
+                    alert('！登录成功！欢迎鉴赏保定瑰宝。');
+                });
+                document.getElementById('registerBtn')?.addEventListener('click', function() {
+                    setLoginState('新晋藏友');
+                    renderAuth();
+                    alert('🎉 注册成功！已自动登录。');
+                });
+            }
+        }
+        
+        function highlightCurrentPage() {
+            const links = document.querySelectorAll('.nav-links a');
+            const currentPath = window.location.pathname.split('/').pop() || 'wenwu.html';
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === currentPath || (currentPath === '' && href === 'wenwu.html')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        setTimeout(() => {
+            renderAuth();
+            highlightCurrentPage();
+        }, 300);
+    });
+</script>
+
+<!-- Three.js 核心模块 (终极优化：仅在打开3D时初始化，页面加载时完全不执行) -->
+<script type="module">
+    // 优化：延迟导入Three.js，页面加载时不加载
+    let THREE, OrbitControls, GLTFLoader;
+    let isThreeLoaded = false;
+    
+
+    const artifacts = [
+        { name: '铜朱雀衔环杯', model: './models/1/1.glb', img: './models/1.jpg', badge: '国宝级 · 错金工艺', period: '西汉 · 公元前2世纪', subtitle: '满城汉墓 · 窦绾墓出土', desc: '通体错金，朱雀衔玉环立于两高足杯之间，造型灵动华美。整体高11.2厘米，融合镶嵌、鎏金等技法，为汉代宫廷用器巅峰之作。', location: '满城区 · 陵山', year: '1968年出土' },
+        { name: '汉铜马', model: './models/2/2.glb', img: './models/2.jpg', badge: '汉代骏逸', period: '汉代 · 公元前206年-公元220年', subtitle: '保定地区出土 · 冀州牧马遗珍', desc: '青铜铸造，马昂首站立，体态雄健，四肢劲拔，鬃毛飘逸。通高约34厘米，生动再现汉代“天马”风采。', location: '保定·徐水', year: '青铜铸造' },
+        { name: '错金铜博山炉', model: './models/3/3.glb', img: './models/3.jpg', badge: '汉代香具魁首', period: '西汉 · 满城汉墓', subtitle: '中山靖王刘胜墓出土', desc: '高26厘米，炉盖雕镂成层峦叠嶂的博山形，通体错金云气纹，山间饰神兽、仙人。焚香时青烟袅袅如仙境。', location: '满城汉墓1号墓', year: '错金工艺' },
+        { name: '长信宫灯', model: './models/5/5.glb', img: './models/5.jpg', badge: '中华第一灯', period: '西汉 · 窦绾墓', subtitle: '鎏金青铜 · 环保设计鼻祖', desc: '通高48厘米，宫女跪坐持灯造型，灯盘可转动，灯罩可开合，烟尘通过宫女袖管导入体内。铭文“长信尚浴”，被誉为“中华第一灯”。', location: '满城汉墓2号墓', year: '鎏金工艺' },
+        { name: '青花釉里红盖罐', model: './models/4/4.glb', img: './models/4.jpg', badge: '元代珍品 · 国宝', period: '元代 · 至正年间', subtitle: '保定永华南路窖藏出土', desc: '通高41.2厘米，集青花、釉里红、镂雕、堆塑于一身，腹部饰牡丹、莲瓣及双螭穿云纹。存世极罕，为元代青花瓷巅峰之作。', location: '保定市永华南路', year: '釉里红 · 镂雕' }
+    ];
+
+    // 仅渲染卡片，不初始化Three.js
+    const grid = document.getElementById('artifactGrid');
+    artifacts.forEach(a => {
+        const card = document.createElement('article');
+        card.className = 'artifact-card';
+        card.dataset.model = a.model;
+        card.dataset.name = a.name;
+        card.innerHTML = `
+            <div class="artifact-image">
+                <img src="${a.img}" alt="${a.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 280%27%3E%3Crect width=%27400%27 height=%27280%27 fill=%27%23e8dfd0%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 font-size=%2720%27 fill=%27%23806040%27 text-anchor=%27middle%27%3E${a.name}%3C/text%3E%3C/svg%3E'">
+                <span class="artifact-badge">${a.badge}</span>
+            </div>
+            <div class="artifact-content">
+                <span class="artifact-period">${a.period}</span>
+                <h3 class="artifact-title">${a.name}</h3>
+                <p class="artifact-subtitle">${a.subtitle}</p>
+                <p class="artifact-desc">${a.desc}</p>
+                <div class="artifact-meta">
+                    <div class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span>${a.location}</span></div>
+                    <div class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>${a.year}</span></div>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    // Three.js 相关变量 (初始为空)
+    const modal = document.getElementById('modelModal');
+    const modelTitle = document.getElementById('modelTitle');
+    const container = document.getElementById('model-container');
+    const closeBtn = document.getElementById('closeModel');
+    const globalNav = document.getElementById('globalNav');
+
+    let scene, camera, renderer, controls;
+    let currentModel = null;
+    let animationFrame = null;
+    let isSceneReady = false;
+    const modelCache = new Map();
+    let resizeTimeout = null;
+
+    // 优化：仅在第一次打开3D时加载Three.js
+    async function loadThreeJS() {
+        if (isThreeLoaded) return;
+        // 动态导入Three.js模块
+        const THREE_MODULE = await import('three');
+        const ORBIT_MODULE = await import('three/addons/controls/OrbitControls.js');
+        const GLTF_MODULE = await import('three/addons/loaders/GLTFLoader.js');
+        
+        THREE = THREE_MODULE;
+        OrbitControls = ORBIT_MODULE.OrbitControls;
+        GLTFLoader = GLTF_MODULE.GLTFLoader;
+        isThreeLoaded = true;
+    }
+
+    // 资源释放
+    function disposeModel(model) {
+        if (!model || !THREE) return;
+        model.traverse(child => {
+            if (child.isMesh) {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                    if (Array.isArray(child.material)) {
+                        child.material.forEach(m => {
+                            if (m.map) m.map.dispose();
+                            if (m.normalMap) m.normalMap.dispose();
+                            m.dispose();
+                        });
+                    } else {
+                        if (child.material.map) child.material.map.dispose();
+                        if (child.material.normalMap) child.material.normalMap.dispose();
+                        child.material.dispose();
+                    }
+                }
+            }
+        });
+        if (model.parent) model.parent.remove(model);
+    }
+
+    // 初始化场景 (仅在加载完Three.js后执行)
+    function initSceneWhenReady(callback) {
+        if (!isThreeLoaded) return;
+        if (isSceneReady) {
+            callback();
+            return;
+        }
+        const tryInit = () => {
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            if (w > 0 && h > 0) {
+                while (container.firstChild) container.removeChild(container.firstChild);
+                
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x0a0a1a);
+                
+                camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+                camera.position.set(4, 3, 6);
+                
+                renderer = new THREE.WebGLRenderer({ 
+                    antialias: true, 
+                    powerPreference: "low-power",
+                    preserveDrawingBuffer: false 
+                });
+                renderer.setSize(w, h);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+                renderer.shadowMap.enabled = false;
+                container.appendChild(renderer.domElement);
+                
+                controls = new OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = false;
+                controls.autoRotate = true;
+                controls.autoRotateSpeed = 1.0;
+                controls.enableZoom = true;
+                controls.enablePan = true;
+                controls.target.set(0, 0.5, 0);
+                controls.maxDistance = 20;
+                controls.minDistance = 1;
+                
+                const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
+                scene.add(ambientLight);
+                
+                const mainLight = new THREE.DirectionalLight(0xfff5e6, 1.5);
+                mainLight.position.set(2, 4, 3);
+                scene.add(mainLight);
+                
+                const planeGeometry = new THREE.CircleGeometry(4, 16);
+                const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x1a1a2a, transparent: true, opacity: 0.1 });
+                const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+                plane.rotation.x = -Math.PI / 2;
+                plane.position.y = -0.01;
+                scene.add(plane);
+                
+                isSceneReady = true;
+                callback();
+            } else {
+                requestAnimationFrame(tryInit);
+            }
+        };
+        requestAnimationFrame(tryInit);
+    }
+
+    // 加载模型
+    function loadModel(url, name) {
+        if (!isThreeLoaded || !scene) return;
+        modelTitle.textContent = name || '文物模型';
+        
+        if (currentModel) {
+            disposeModel(currentModel);
+            currentModel = null;
+        }
+        
+        if (modelCache.has(url)) {
+            const cachedModel = modelCache.get(url).clone();
+            setupModel(cachedModel);
+            scene.add(cachedModel);
+            currentModel = cachedModel;
+            modelTitle.textContent = name;
+            return;
+        }
+        
+        const loader = new GLTFLoader();
+        loader.load(url, (gltf) => {
+            const model = gltf.scene;
+            modelCache.set(url, model.clone());
+            setupModel(model);
+            scene.add(model);
+            currentModel = model;
+            modelTitle.textContent = name;
+        }, (xhr) => {
+            const pct = Math.floor((xhr.loaded / xhr.total) * 100);
+            modelTitle.textContent = `${name} 加载中 ${pct}%`;
+        }, (error) => {
+            console.warn('模型加载失败:', url);
+            modelTitle.textContent = `⚠️ 模型加载失败 (${name})`;
+            const geo = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+            const mat = new THREE.MeshStandardMaterial({ color: 0xc9a961, wireframe: true });
+            const placeholder = new THREE.Mesh(geo, mat);
+            placeholder.position.y = 0.8;
+            scene.add(placeholder);
+            currentModel = placeholder;
+            controls.target.set(0, 0.8, 0);
+        });
+    }
+
+    // 模型定位
+    function setupModel(model) {
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = maxDim > 0 ? 2.5 / maxDim : 1.0;
+        model.scale.setScalar(scale);
+        
+        model.updateWorldMatrix(true, true);
+        const scaledBox = new THREE.Box3().setFromObject(model);
+        const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
+        model.position.x = -scaledCenter.x;
+        model.position.y = -scaledCenter.y;
+        model.position.z = -scaledCenter.z;
+        
+        const finalBox = new THREE.Box3().setFromObject(model);
+        const minY = finalBox.min.y;
+        model.position.y += (0 - minY);
+        
+        const finalSize = finalBox.getSize(new THREE.Vector3());
+        const distance = Math.max(3.5, finalSize.length() * 0.9);
+        camera.position.set(distance * 0.8, distance * 0.5, distance);
+        controls.target.set(0, finalSize.y * 0.35, 0);
+        controls.update();
+    }
+
+    // 动画循环 (仅在模态框激活时运行)
+    function animate() {
+        if (modal.classList.contains('active') && isSceneReady && renderer && THREE) {
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animationFrame = requestAnimationFrame(animate);
+    }
+
+    // 打开模态框 (核心：先加载Three.js，再初始化)
+    async function openModal(modelUrl, modelName) {
+        if (globalNav) globalNav.style.display = 'none';
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // 第一次打开时加载Three.js
+        await loadThreeJS();
+        
+        initSceneWhenReady(() => {
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            if (renderer) {
+                renderer.setSize(w, h);
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+            }
+            loadModel(modelUrl, modelName);
+            // 启动动画循环 (仅在第一次打开时)
+            if (!animationFrame) animate();
+        });
+    }
+
+    // 关闭模态框
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        if (globalNav) globalNav.style.display = 'flex';
+        if (controls) controls.autoRotate = false;
+    }
+
+    // 绑定事件
+    document.querySelectorAll('.artifact-card').forEach(card => {
+        card.addEventListener('click', async () => {
+            const url = card.dataset.model;
+            const name = card.dataset.name || '文物';
+            if (controls) controls.autoRotate = true;
+            await openModal(url, name);
+        });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            if (!modal.classList.contains('active') || !renderer || !THREE) return;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            renderer.setSize(w, h);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+        }, 100);
+    });
+    
+    window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // 页面卸载清理
+    window.addEventListener('beforeunload', () => {
+        if (animationFrame) cancelAnimationFrame(animationFrame);
+        if (renderer && THREE) renderer.dispose();
+        modelCache.clear();
+    });
+
+    console.log('✅ 保定文物典藏 · 封面图片已修复为完整展示 (object-fit: contain)');
+</script>
+
+</body>
+</html>

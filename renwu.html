@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>保定人物志 · 京畿华章 | 极速流畅版</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ========== 终极性能优化：保留所有图片，启用GPU加速，减少滚动卡顿 ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: url('../人物/7.jpg') center center / cover no-repeat;
+      /* 关键优化：背景随文档流滚动，无fixed，且强制启用硬件加速 */
+      font-family: 'Noto Serif SC', 'Times New Roman', '宋体', serif;
+      color: #1e2b3c;
+      line-height: 1.5;
+      padding-top: 70px;
+      /* 为body开启合成层，减少重绘 */
+      transform: translateZ(0);
+      will-change: auto; /* 不强制，让浏览器决定 */
+    }
+
+    h1, h2, h3, .sans {
+      font-family: 'Poppins', 'Segoe UI', 'Helvetica Neue', sans-serif;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+    .wrapper {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      /* 避免wrapper影响合成层 */
+    }
+
+    /* HERO 区域 - 保留原背景图片，优化渲染 */
+    .hero {
+      background: url('../人物/top.jpg') center center / cover no-repeat;
+      color: white;
+      padding: 120px 0 120px;
+      margin-bottom: 40px;
+      border-radius: 0 0 40px 40px;
+      box-shadow: 0 12px 24px -8px rgba(0, 20, 40, 0.2);
+      position: relative;
+      overflow: hidden;
+      /* 开启硬件加速 */
+      transform: translateZ(0);
+      will-change: transform;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 8px);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      max-width: 800px;
+    }
+
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 600;
+      margin-bottom: 40px;
+      color: #1e3a5f;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title i {
+      background: #9e2b2b;
+      color: white;
+      padding: 12px;
+      border-radius: 50%;
+      font-size: 1.4rem;
+      width: 48px;
+      height: 48px;
+      text-align: center;
+      line-height: 1.6;
+      box-shadow: 0 6px 10px rgba(158,43,43,0.2);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-bottom: 60px;
+    }
+
+    /* 卡片优化：强制独立合成层 + 减少重绘边界 */
+    .person-card {
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 32px;
+      padding: 28px 20px 26px;
+      box-shadow: 0 16px 30px -8px rgba(20, 30, 40, 0.12);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid rgba(210, 190, 160, 0.4);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      /* GPU 加速核心：提升为独立合成层，滚动时不会触发相邻元素重绘 */
+      transform: translateZ(0);
+      will-change: transform;  /* 提示浏览器优化变换，但不影响滚动 */
+      backface-visibility: hidden;
+      /* 限制重绘范围 */
+      contain: layout style paint;
+    }
+
+    .person-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 28px 40px -12px rgba(25, 50, 80, 0.22);
+      border-color: #cfb087;
+      background: rgba(255, 255, 255, 0.99);
+    }
+
+    /* 卡片背景图片保留，优化不透明度变化性能 */
+    .person-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.65;
+      z-index: 0;
+      transition: opacity 0.2s;
+      /* 让背景图也由GPU合成 */
+      transform: translateZ(0);
+      will-change: opacity;
+    }
+    .person-card:hover::before {
+      opacity: 0.75;
+    }
+
+    .card-1::before { background-image: url('../人物/1.jpg'); }
+    .card-2::before { background-image: url('../人物/2.jpg'); }
+    .card-3::before { background-image: url('../人物/3.jpg'); }
+    .card-4::before { background-image: url('../人物/4.jpg'); }
+    .card-5::before { background-image: url('../人物/5.jpg'); }
+    .card-6::before { background-image: url('../人物/6.jpg'); }
+
+    /* 装饰符号，降低不透明度变化频率 */
+    .person-card::after {
+      content: "⚜️";
+      font-size: 70px;
+      position: absolute;
+      bottom: -8px;
+      right: -8px;
+      opacity: 0.08;
+      transform: rotate(-8deg);
+      color: #3a281f;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 40% 60% 30% 70% / 50% 40% 60% 50%;
+      background: #1e3a5f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 14px rgba(0,20,40,0.2);
+      transition: border-radius 0.2s;
+      border: 3px solid #f1e6d8;
+      position: relative;
+      z-index: 2;
+    }
+
+    .person-card:hover .avatar {
+      border-radius: 50% 30% 50% 30% / 40% 50% 40% 50%;
+    }
+
+    .avatar span {
+      font-size: 42px;
+      font-weight: 700;
+      color: white;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      font-family: 'Poppins', 'Noto Serif SC', sans-serif;
+    }
+
+    .card-1 .avatar { background: #2c5f2d; }
+    .card-2 .avatar { background: #1e4f6b; }
+    .card-3 .avatar { background: #6b4f3c; }
+    .card-4 .avatar { background: #a53f3f; }
+    .card-5 .avatar { background: #b52a2a; }
+    .card-6 .avatar { background: #385170; }
+
+    .person-name {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #111a27;
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .person-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #9e2b2b;
+      font-weight: 600;
+      margin-bottom: 12px;
+      border-bottom: 2px dotted #dac09a;
+      padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .person-desc {
+      color: #1e2b3c;
+      margin-bottom: 18px;
+      font-size: 1rem;
+      line-height: 1.7;
+      flex: 1;
+      position: relative;
+      z-index: 2;
+      font-weight: 500;
+    }
+
+    .hometown-tag {
+      background: #f1ebe4;
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      color: #2b3e55;
+      font-weight: 600;
+      border: 1px solid #dcccb8;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hometown-tag i {
+      color: #9e2b2b;
+    }
+
+    /* 页脚优化 */
+    .footer {
+      margin-top: 40px;
+      padding: 20px 0 12px;
+      border-top: 1px solid #ddd2c2;
+      color: #5a6a78;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 20px 20px 0 0;
+      font-size: 0.9rem;
+      transform: translateZ(0);
+    }
+
+    .footer .symbols i {
+      margin-left: 12px;
+      font-size: 1.1rem;
+      color: #8b7a66;
+      transition: color 0.2s;
+    }
+
+    .footer .symbols i:hover { color: #9e2b2b; }
+
+    @media screen and (max-width: 900px) {
+      .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
+    }
+
+    @media screen and (max-width: 600px) {
+      body { padding-top: 60px; }
+      .wrapper { padding: 0 18px; }
+      .hero {
+        padding: 80px 0 80px;
+        border-radius: 0 0 28px 28px;
+      }
+      .card-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .section-title {
+        font-size: 1.8rem;
+      }
+      .footer {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        padding: 16px 0 10px;
+      }
+    }
+
+    .badge {
+      background: #e6d9cc;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+      color: #3f2e1e;
+    }
+    i {
+      margin-right: 4px;
+    }
+
+    /* ========== 全局导航栏 (轻量优化) ========== */
+    .global-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 70px;
+      background: rgba(10, 10, 12, 0.88);
+      border-bottom: 1px solid rgba(201, 169, 97, 0.4);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      box-sizing: border-box;
+      /* 固定元素也启用加速 */
+      transform: translateZ(0);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-logo a {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #E8D5A3;
+      text-decoration: none;
+      letter-spacing: 4px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+      font-family: 'Noto Serif SC', 'Times New Roman', serif;
+    }
+    .nav-logo span {
+      color: #C9A961;
+      font-size: 1.4rem;
+      margin-left: 4px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .nav-links a {
+      color: #f0ebe4;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      padding: 8px 0;
+      position: relative;
+      transition: color 0.2s;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #C9A961;
+      transition: width 0.25s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: #E8D5A3;
+    }
+    .nav-links a:hover::after, .nav-links a.active::after {
+      width: 100%;
+    }
+    .auth-area {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .auth-btn {
+      background: transparent;
+      border: 1.5px solid #C9A961;
+      color: #E8D5A3;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .auth-btn:hover {
+      background: #C9A961;
+      color: #1A1512;
+      border-color: #C9A961;
+    }
+    .user-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .user-btn {
+      background: rgba(201, 169, 97, 0.2);
+      border: 1px solid #C9A961;
+      color: #E8D5A3;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 48px;
+      background: rgba(20, 18, 16, 0.96);
+      border: 1px solid #C9A961;
+      border-radius: 16px;
+      min-width: 140px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      z-index: 10000;
+      overflow: hidden;
+    }
+    .dropdown-content a {
+      color: #E8D5A3;
+      padding: 12px 20px;
+      text-decoration: none;
+      display: block;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+      border-bottom: 1px solid rgba(201,169,97,0.2);
+    }
+    .dropdown-content a:last-child {
+      border-bottom: none;
+    }
+    .dropdown-content a:hover {
+      background: rgba(201, 169, 97, 0.3);
+    }
+    .user-dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .global-nav {
+        padding: 0 16px;
+        height: 60px;
+      }
+      .nav-logo a { font-size: 1.3rem; }
+      .nav-links { gap: 16px; }
+      .nav-links a { font-size: 0.9rem; }
+      .auth-btn { padding: 5px 14px; font-size: 0.9rem; }
+    }
+
+    /* 额外优化：减少滚动时不必要的样式重算 */
+    .person-card, .hero, .footer, .global-nav {
+      contain: layout style paint;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 全局导航栏 -->
+<nav class="global-nav">
+  <div class="nav-logo">
+    <a href="index.html">保定·风物志<span>⚜️</span></a>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">首页</a>
+    <a href="jies.html">保定之韵</a>
+    <a href="renwu.html" class="active">人物志</a>
+    <a href="wenwu.html">博物录</a>
+    <a href="assistant.html">百事通</a>
+  </div>
+  <div class="auth-area" id="authArea"></div>
+</nav>
+
+<div class="wrapper">
+  <section class="hero">
+    <div class="hero-content"></div>
+  </section>
+
+  <div class="section-title">
+    <i class="fas fa-users"></i>
+    <span>群星闪耀 · 保定人物</span>
+  </div>
+
+  <div class="card-grid">
+    <!-- 刘备 -->
+    <a href="https://baike.baidu.com/item/刘备" target="_blank" class="person-card card-1">
+      <div class="avatar"><span>刘</span></div>
+      <div class="person-name">刘备</div>
+      <div class="person-title"><i class="fas fa-crown"></i> 蜀汉昭烈帝</div>
+      <div class="person-desc">
+        字玄德，涿郡涿县（今保定涿州）人。三国时期蜀汉开国皇帝，以仁德闻名，弘毅宽厚，知人待士。
+      </div>
+      <div class="hometown-tag">
+        <i class="fas fa-location-dot"></i> 保定·涿州
+        <span class="badge">汉昭烈帝</span>
+      </div>
+      <div style="margin-top: 8px; color:#6b4f3c; font-size:0.8rem;">
+        <i class="fas fa-tag"></i> “惟贤惟德，能服于人”
+      </div>
+    </a>
+
+    <!-- 祖冲之 -->
+    <a href="https://baike.baidu.com/item/祖冲之" target="_blank" class="person-card card-2">
+      <div class="avatar"><span>祖</span></div>
+      <div class="person-name">祖冲之</div>
+      <div class="person-title"><i class="fas fa-infinity"></i> 数学家 · 天文学家</div>
+      <div class="person-desc">
+        范阳遒县（今保定涞水）人。首次将圆周率精算到小数第七位，提出“祖暅原理”，编制《大明历》。
+      </div>
+      <div class="hometown-tag">
+        <i class="fas fa-location-dot"></i> 保定·涞水
+        <span class="badge">圆周率之父</span>
+      </div>
+      <div style="margin-top:8px; font-size:0.8rem; color:#1e4f6b;">
+        <i class="fas fa-star"></i> 领先世界千年
+      </div>
+    </a>
+
+    <!-- 郦道元 -->
+    <a href="https://baike.baidu.com/item/郦道元" target="_blank" class="person-card card-3">
+      <div class="avatar"><span>郦</span></div>
+      <div class="person-name">郦道元</div>
+      <div class="person-title"><i class="fas fa-water"></i> 地理学家 · 散文家</div>
+      <div class="person-desc">
+        范阳涿县（今保定涿州）人。撰《水经注》四十卷，文笔隽永，既是地理名著，又是山水文学佳作。
+      </div>
+      <div class="hometown-tag">
+        <i class="fas fa-location-dot"></i> 保定·涿州
+        <span class="badge">《水经注》</span>
+      </div>
+    </a>
+
+    <!-- 关汉卿 -->
+    <a href="https://baike.baidu.com/item/关汉卿" target="_blank" class="person-card card-4">
+      <div class="avatar"><span>关</span></div>
+      <div class="person-name">关汉卿</div>
+      <div class="person-title"><i class="fas fa-mask"></i> 元曲四大家之首</div>
+      <div class="person-desc">
+       祁州（今保定安国）人。元代杂剧奠基人，代表作《窦娥冤》《救风尘》《单刀会》，被誉为“东方莎士比亚”。
+      </div>
+      <div class="hometown-tag">
+        <i class="fas fa-location-dot"></i> 保定·安国
+        <span class="badge">曲圣</span>
+      </div>
+    </a>
+
+    <!-- 荆轲 -->
+    <a href="https://baike.baidu.com/item/荆轲" target="_blank" class="person-card card-5">
+      <div class="avatar"><span>荆</span></div>
+      <div class="person-name">荆轲</div>
+      <div class="person-title"><i class="fas fa-sword"></i> 战国刺客 · 慷慨悲歌</div>
+      <div class="person-desc">
+        春秋战国卫国人，在燕国（今保定易县）行刺秦王，留下“风萧萧兮易水寒，壮士一去兮不复还”的千古绝唱。
+      </div>
+      <div class="hometown-tag">
+        <i class="fas fa-location-dot"></i> 保定·易县
+        <span class="badge">易水悲歌</span>
+      </div>
+      <div style="margin-top:8px; font-size:0.8rem; color:#b52a2a;">
+        <i class="fas fa-feather"></i> 燕赵侠士风骨
+      </div>
+    </a>
+
+    <!-- 赵匡胤 -->
+    <a href="https://baike.baidu.com/item/赵匡胤" target="_blank" class="person-card card-6">
+      <div class="avatar"><span>赵</span></div>
+      <div class="person-name">赵匡胤</div>
+      <div class="person-title"><i class="fas fa-shield-halved"></i> 宋太祖 · 北宋开国皇帝</div>
+      <div class="person-desc">
+        涿郡（今保定涿州）人。发动陈桥兵变，黄袍加身，建立北宋，结束五代十国战乱，开创文治盛世。
+      </div>
+      <div class="hometown-tag">
+        <i class="fas fa-location-dot"></i> 保定·涿州
+        <span class="badge">陈桥定鼎</span>
+      </div>
+      <div style="margin-top:8px; font-size:0.8rem; color:#385170;">
+        <i class="fas fa-flag"></i> 黄袍加身，杯酒释兵权
+      </div>
+    </a>
+  </div>
+
+  <footer class="footer">
+    <div>
+      <i class="fas fa-mountain-city"></i> 保定 · 国家历史文化名城  |  崇信 · 重义 · 尚和 · 争先
+    </div>
+    <div class="symbols">
+      <i class="fas fa-dove"></i>
+      <i class="fas fa-sword"></i>
+      <i class="fas fa-shield-halved"></i>
+      <span style="margin-left: 16px; opacity: 0.8;">⚜️ 人物志 · 传承 ⚜️</span>
+    </div>
+    <div style="width:100%; margin-top: 8px; font-size:0.75rem; text-align:center; opacity:0.7;">
+      <i class="far fa-copyright"></i> 保定人物 · 燕赵风骨 
+    </div>
+  </footer>
+</div>
+
+<script>
+  (function() {
+    const authArea = document.getElementById('authArea');
+    
+    function getLoginState() {
+      return localStorage.getItem('bd_loggedIn') === 'true';
+    }
+    function getUsername() {
+      return localStorage.getItem('bd_username') || '燕赵名士';
+    }
+    function setLoginState(username = '燕赵名士') {
+      localStorage.setItem('bd_loggedIn', 'true');
+      localStorage.setItem('bd_username', username);
+    }
+    function clearLoginState() {
+      localStorage.removeItem('bd_loggedIn');
+      localStorage.removeItem('bd_username');
+    }
+    
+    function renderAuth() {
+      if (!authArea) return;
+      const isLogged = getLoginState();
+      if (isLogged) {
+        const username = getUsername();
+        authArea.innerHTML = `
+          <div class="user-dropdown">
+            <div class="user-btn">
+              <span>👤 ${escapeHtml(username)}</span>
+              <span style="font-size:12px;">▼</span>
+            </div>
+            <div class="dropdown-content">
+              <a href="#" id="logoutBtn">🚪 退出登录</a>
+            </div>
+          </div>
+        `;
+        document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
+          e.preventDefault();
+          clearLoginState();
+          renderAuth();
+        });
+      } else {
+        authArea.innerHTML = `
+          <button class="auth-btn" id="loginBtn">登录</button>
+          <button class="auth-btn" id="registerBtn">注册</button>
+        `;
+        document.getElementById('loginBtn')?.addEventListener('click', function() {
+          setLoginState('保定英杰');
+          renderAuth();
+          alert('✨ 登录成功！欢迎阅览人物志。');
+        });
+        document.getElementById('registerBtn')?.addEventListener('click', function() {
+          setLoginState('新晋访客');
+          renderAuth();
+          alert('🎉 注册成功！已自动登录。');
+        });
+      }
+    }
+    
+    function escapeHtml(str) {
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+    
+    function highlightCurrentPage() {
+      const links = document.querySelectorAll('.nav-links a');
+      const currentPath = window.location.pathname.split('/').pop() || 'renwu.html';
+      links.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === currentPath || (currentPath === '' && href === 'renwu.html')) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    }
+    
+    renderAuth();
+    highlightCurrentPage();
+  })();
+</script>
+</body>
+</html>

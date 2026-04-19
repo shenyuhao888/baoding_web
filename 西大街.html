@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>西大街_志览</title>
+<style>
+* {
+  margin:0; padding:0;
+  box-sizing:border-box;
+  font-family: "微软雅黑", "宋体", Arial, sans-serif;
+  scroll-behavior: smooth;
+}
+body {
+  background: url("./中国风国潮/背景/背景2.JPG") center/cover fixed no-repeat;
+  background-color: #f6f6f6;
+  color: #333;
+  line-height:1.8;
+}
+.carousel {
+  max-width: 980px;
+  height: 520px;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.carousel img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  position: absolute;
+  opacity: 0;
+  animation: slide 15s infinite;
+}
+.carousel img:nth-child(1) { animation-delay:0s; }
+.carousel img:nth-child(2) { animation-delay:5s; }
+.carousel img:nth-child(3) { animation-delay:10s; }
+@keyframes slide {
+  0%  { opacity:0; }
+  10% { opacity:1; }
+  33% { opacity:1; }
+  43% { opacity:0; }
+  100%{ opacity:0; }
+}
+.baike {
+  max-width: 980px;
+  margin: 0 auto 60px;
+  background: #6d2e2e;
+  color: #f6e8d7;
+  padding: 40px 50px;
+  border-radius: 16px;
+  border: 1px solid #994444;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+.baike-title {
+  font-size: 34px;
+  font-weight: bold;
+  border-bottom: 1px solid #994444;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  color: #f6e8d7;
+}
+.info-box {
+  float: right;
+  width: 280px;
+  background: #7d3a3a;
+  border: 1px solid #a05555;
+  padding: 15px;
+  margin: 0 0 15px 20px;
+  font-size: 14px;
+  color: #f6e8d7;
+  border-radius: 12px;
+}
+.info-box h3 {
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.info-box table { width:100%; border-collapse:collapse; }
+.info-box td { padding:4px 0; vertical-align:top; }
+.info-box td:first-child { font-weight:bold; color:#f6e8d7; width:80px; }
+.summary { font-size:16px; margin-bottom:25px; text-align:justify; }
+.catalog {
+  background: #7d3a3a;
+  border: 1px solid #a05555;
+  padding: 15px 20px;
+  margin: 25px 0;
+  display: inline-block;
+  border-radius: 12px;
+}
+.catalog h3 { font-size:15px; margin-bottom:8px; }
+.catalog ul { list-style:none; }
+.catalog li { margin:4px 0; font-size:14px; }
+.catalog a { color:#f6e8d7; text-decoration:none; transition:0.3s; }
+.catalog a:hover { color:#ffd700; }
+.chapter { margin:35px 0; clear:both; scroll-margin-top:20px; }
+.chapter h2 {
+  font-size:22px;
+  border-left:4px solid #f6e8d7;
+  padding-left:10px;
+  margin-bottom:15px;
+  color:#f6e8d7;
+}
+.chapter p { font-size:16px; text-indent:2em; margin-bottom:15px; text-align:justify; }
+.btn-group { margin-top:30px; display:flex; gap:15px; }
+.back {
+  padding:10px 25px;
+  background:#a04444;
+  color:#fff;
+  text-decoration:none;
+  border-radius:8px;
+  font-size:14px;
+  transition:0.3s;
+}
+.back:hover { background:#c55555; }
+</style>
+</head>
+<body>
+
+<div class="carousel">
+  <img src="./景点_images/西大街/1.jpg">
+  <img src="./景点_images/西大街/2.jpg">
+  <img src="./景点_images/西大街/3.jpg">
+</div>
+
+<div class="baike">
+  <h1 class="baike-title">西大街</h1>
+  <div class="info-box">
+    <h3>基本信息</h3>
+    <table>
+      <tr><td>名称</td><td>保定西大街</td></tr>
+      <tr><td>地理位置</td><td>河北省保定市</td></tr>
+      <tr><td>形成年代</td><td>明清时期</td></tr>
+      <tr><td>街道风格</td><td>明清古街、商业老街</td></tr>
+      <tr><td>特色</td><td>老字号云集、古建筑连片</td></tr>
+      <tr><td>定位</td><td>保定历史文化街区</td></tr>
+    </table>
+  </div>
+
+  <div class="summary">
+    西大街是保定历史最悠久的老街之一，自明清形成街市，
+    历经数百年繁华，曾是保定最重要的商业文化街区。
+    街道两侧保留大量清末民初建筑，老字号众多，
+    是保定城市记忆与民俗文化的重要载体。
+  </div>
+
+  <div class="catalog">
+    <h3>目录</h3>
+    <ul>
+      <li><a href="#part1">1 历史沿革</a></li>
+      <li><a href="#part2">2 街道格局</a></li>
+      <li><a href="#part3">3 建筑风貌</a></li>
+      <li><a href="#part4">4 文化与商业</a></li>
+      <li><a href="#part5">5 保护与更新</a></li>
+    </ul>
+  </div>
+
+  <div class="chapter" id="part1">
+    <h2>历史沿革</h2>
+    <p>西大街形成于明清时期，因地处古城西侧而得名。
+    清代至民国，这里商铺林立、车马喧嚣，成为保定最繁华的商业街。
+    街道见证了保定数百年的商业兴衰与城市变迁。</p>
+  </div>
+
+  <div class="chapter" id="part2">
+    <h2>街道格局</h2>
+    <p>街道呈东西走向，笔直通畅，两侧店铺对称分布，
+    典型的北方街市布局。街道宽度适中，尺度亲切，
+    保留传统街巷肌理与步行氛围。</p>
+  </div>
+
+  <div class="chapter" id="part3">
+    <h2>建筑风貌</h2>
+    <p>两侧建筑多为清末民初风格，砖木结构，坡顶、骑楼、门面装饰精美，
+    兼具中式传统与近代商业特色。灰砖、木构、雕花门窗构成独特街景。</p>
+  </div>
+
+  <div class="chapter" id="part4">
+    <h2>文化与商业</h2>
+    <p>西大街曾云集绸缎、茶叶、糕点、药房、书局等各类老字号，
+    是保定民俗、饮食、商业文化的集中展示区。
+    至今仍保留许多传统业态与市井气息。</p>
+  </div>
+
+  <div class="chapter" id="part5">
+    <h2>保护与更新</h2>
+    <p>近年来，西大街进行保护性修缮，恢复历史风貌，
+    打造文化休闲街区，成为游客体验保定古城韵味的重要去处。</p>
+  </div>
+
+  <div class="btn-group">
+    <a href="jies.html" class="back">返回上一级</a>
+    <a href="index.html" class="back">返回首页</a>
+  </div>
+</div>
+
+</body>
+</html>

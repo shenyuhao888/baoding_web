@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>保定风物志 · 首页</title>
+    <!-- 引入优雅字体，与内页风格一致 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", "Noto Serif SC", sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #0a0a0c;
+            color: white;
+        }
+
+        /* ========== 全局导航栏样式 (与 jies.html 完全一致) ========== */
+        .global-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(10, 10, 12, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(201, 169, 97, 0.3);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            box-sizing: border-box;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-logo a {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #E8D5A3;
+            text-decoration: none;
+            letter-spacing: 4px;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+            font-family: 'Noto Serif SC', 'Times New Roman', serif;
+        }
+        .nav-logo span {
+            color: #C9A961;
+            font-size: 1.4rem;
+            margin-left: 4px;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        .nav-links a {
+            color: #f0ebe4;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            padding: 8px 0;
+            position: relative;
+            transition: color 0.2s;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #C9A961;
+            transition: width 0.3s;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: #E8D5A3;
+        }
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+        .auth-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .auth-btn {
+            background: transparent;
+            border: 1.5px solid #C9A961;
+            color: #E8D5A3;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            backdrop-filter: blur(4px);
+            letter-spacing: 1px;
+        }
+        .auth-btn:hover {
+            background: #C9A961;
+            color: #1A1512;
+            border-color: #C9A961;
+        }
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .user-btn {
+            background: rgba(201, 169, 97, 0.2);
+            border: 1px solid #C9A961;
+            color: #E8D5A3;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 48px;
+            background: rgba(20, 18, 16, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid #C9A961;
+            border-radius: 16px;
+            min-width: 140px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 10001;
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: #E8D5A3;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+            border-bottom: 1px solid rgba(201,169,97,0.2);
+        }
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+        .dropdown-content a:hover {
+            background: rgba(201, 169, 97, 0.25);
+        }
+        .user-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* 移动端导航适配 */
+        @media (max-width: 768px) {
+            .global-nav {
+                padding: 0 16px;
+                height: 60px;
+            }
+            .nav-logo a { font-size: 1.3rem; }
+            .nav-links { gap: 16px; }
+            .nav-links a { font-size: 0.9rem; }
+            .auth-btn { padding: 5px 14px; font-size: 0.9rem; }
+        }
+
+        /* 全屏视频 banner 区域 (保留原有设计，并避免导航遮挡核心内容) */
+        .banner {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .banner video {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        /* 增加半透明遮罩让文字更清晰 */
+        .banner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .banner .content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            animation: fadeUp 1.2s ease-out;
+            padding: 0 20px;
+        }
+        .banner .content h1 {
+            font-size: 64px;
+            margin-bottom: 12px;
+            font-family: 'Noto Serif SC', serif;
+            letter-spacing: 6px;
+            text-shadow: 3px 3px 12px rgba(0,0,0,0.6);
+            background: linear-gradient(135deg, #F3E7C0 0%, #C9A961 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .banner .content p {
+            font-size: 20px;
+            color: #f0ebe4;
+            letter-spacing: 2px;
+            font-weight: 300;
+            text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+        }
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 小屏优化 */
+        @media (max-width: 768px) {
+            .banner .content h1 {
+                font-size: 40px;
+                letter-spacing: 3px;
+            }
+            .banner .content p {
+                font-size: 16px;
+            }
+        }
+
+        /* 由于导航栏fixed，无需额外body padding-top，banner全屏不受影响，但为避免页面滚动后内容被遮挡，可加简单平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== 统一导航栏 (与jies.html完全一致的组件，高亮“首页”) ========== -->
+<nav class="global-nav">
+    <div class="nav-logo">
+        <a href="index.html">保定·风物志<span>⚜️</span></a>
+    </div>
+    <div class="nav-links">
+        <a href="index.html" class="active">首页</a>
+        <a href="jies.html">保定之韵</a>
+        <a href="renwu.html">人物志</a>
+        <a href="wenwu.html">博物录</a>
+        <a href="assistant.html">百事通</a>
+    </div>
+    <div class="auth-area" id="authArea">
+        <!-- 动态渲染登录/用户状态 -->
+    </div>
+</nav>
+
+<!-- 全屏视频主视觉区 -->
+<div class="banner">
+    <video autoplay muted loop playsinline preload="auto">
+        <source src="356.mp4" type="video/mp4">
+        <!-- 如果视频加载失败，显示降级背景 -->
+        您的浏览器不支持 video 标签。
+    </video>
+    <div class="content">
+        <h1>保定·风物志</h1>
+        <p>千年保定，一游尽览 · 燕赵风骨，山水相逢</p>
+    </div>
+</div>
+
+<!-- 登录/注册及用户状态管理脚本 (完全复用jies.html逻辑，高亮适配首页) -->
+<script>
+    (function() {
+        const authArea = document.getElementById('authArea');
+        
+        // 获取登录状态和用户名 (与jies.html共用localStorage key)
+        function getLoginState() { return localStorage.getItem('bd_loggedIn') === 'true'; }
+        function getUsername() { return localStorage.getItem('bd_username') || '风物旅人'; }
+        function setLoginState(username = '风物旅人') { 
+            localStorage.setItem('bd_loggedIn', 'true'); 
+            localStorage.setItem('bd_username', username); 
+        }
+        function clearLoginState() { 
+            localStorage.removeItem('bd_loggedIn'); 
+            localStorage.removeItem('bd_username'); 
+        }
+        
+        // 渲染导航栏右侧区域 (登录/用户下拉)
+        function renderAuth() {
+            if (!authArea) return;
+            if (getLoginState()) {
+                const username = getUsername();
+                authArea.innerHTML = `<div class="user-dropdown"><div class="user-btn"><span>👤 ${escapeHtml(username)}</span><span style="font-size:12px;">▼</span></div><div class="dropdown-content"><a href="#" id="logoutBtn">🚪 退出登录</a></div></div>`;
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', (e) => { 
+                        e.preventDefault(); 
+                        clearLoginState(); 
+                        renderAuth(); 
+                        // 可选提示
+                        // alert('已退出登录');
+                    });
+                }
+            } else {
+                authArea.innerHTML = `<button class="auth-btn" id="loginBtn">登录</button><button class="auth-btn" id="registerBtn">注册</button>`;
+                const loginBtn = document.getElementById('loginBtn');
+                const registerBtn = document.getElementById('registerBtn');
+                if (loginBtn) {
+                    loginBtn.addEventListener('click', () => { 
+                        setLoginState('保定知音'); 
+                        renderAuth(); 
+                        alert('✨ 登录成功！欢迎品读保定风物志。'); 
+                    });
+                }
+                if (registerBtn) {
+                    registerBtn.addEventListener('click', () => { 
+                        setLoginState('新游客'); 
+                        renderAuth(); 
+                        alert('🎉 注册成功！已自动登录，开始探索保定之美。'); 
+                    });
+                }
+            }
+        }
+        
+        // 简单防XSS
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // 高亮当前页面 (首页)
+        function highlightCurrentPage() {
+            const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === currentPath || (currentPath === '' && href === 'index.html') || (href === 'index.html' && currentPath === 'index.html')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+        
+        renderAuth();
+        highlightCurrentPage();
+    })();
+</script>
+
+<!-- 可选：添加简单底部留白或滚动效果，确保视觉完整（无额外元素干扰，保持原设计纯粹） -->
+</body>
+</html>

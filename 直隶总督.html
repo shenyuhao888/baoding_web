@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>直隶总督署_志览</title>
+<style>
+* {
+  margin:0; padding:0;
+  box-sizing:border-box;
+  font-family: "微软雅黑", "宋体", Arial, sans-serif;
+  scroll-behavior: smooth;
+}
+body {
+  background: url("./中国风国潮/背景/背景2.JPG") center/cover fixed no-repeat;
+  background-color: #f6f6f6;
+  color: #333;
+  line-height:1.8;
+}
+.carousel {
+  max-width: 980px;
+  height: 520px;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.carousel img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  position: absolute;
+  opacity: 0;
+  animation: slide 15s infinite;
+}
+.carousel img:nth-child(1) { animation-delay:0s; }
+.carousel img:nth-child(2) { animation-delay:5s; }
+.carousel img:nth-child(3) { animation-delay:10s; }
+@keyframes slide {
+  0%  { opacity:0; }
+  10% { opacity:1; }
+  33% { opacity:1; }
+  43% { opacity:0; }
+  100%{ opacity:0; }
+}
+.baike {
+  max-width: 980px;
+  margin: 0 auto 60px;
+  background: #6d2e2e;
+  color: #f6e8d7;
+  padding: 40px 50px;
+  border-radius: 16px;
+  border: 1px solid #994444;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+.baike-title {
+  font-size: 34px;
+  font-weight: bold;
+  border-bottom: 1px solid #994444;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  color: #f6e8d7;
+}
+.info-box {
+  float: right;
+  width: 280px;
+  background: #7d3a3a;
+  border: 1px solid #a05555;
+  padding: 15px;
+  margin: 0 0 15px 20px;
+  font-size: 14px;
+  color: #f6e8d7;
+  border-radius: 12px;
+}
+.info-box h3 {
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.info-box table { width:100%; border-collapse:collapse; }
+.info-box td { padding:4px 0; vertical-align:top; }
+.info-box td:first-child { font-weight:bold; color:#f6e8d7; width:80px; }
+.summary { font-size:16px; margin-bottom:25px; text-align:justify; }
+.catalog {
+  background: #7d3a3a;
+  border: 1px solid #a05555;
+  padding: 15px 20px;
+  margin: 25px 0;
+  display: inline-block;
+  border-radius: 12px;
+}
+.catalog h3 { font-size:15px; margin-bottom:8px; }
+.catalog ul { list-style:none; }
+.catalog li { margin:4px 0; font-size:14px; }
+.catalog a { color:#f6e8d7; text-decoration:none; transition:0.3s; }
+.catalog a:hover { color:#ffd700; }
+.chapter { margin:35px 0; clear:both; scroll-margin-top:20px; }
+.chapter h2 {
+  font-size:22px;
+  border-left:4px solid #f6e8d7;
+  padding-left:10px;
+  margin-bottom:15px;
+  color:#f6e8d7;
+}
+.chapter p { font-size:16px; text-indent:2em; margin-bottom:15px; text-align:justify; }
+.btn-group { margin-top:30px; display:flex; gap:15px; }
+.back {
+  padding:10px 25px;
+  background:#a04444;
+  color:#fff;
+  text-decoration:none;
+  border-radius:8px;
+  font-size:14px;
+  transition:0.3s;
+}
+.back:hover { background:#c55555; }
+</style>
+</head>
+<body>
+
+<div class="carousel">
+  <img src="./景点_images/直隶总督署/3.jpg">
+  <img src="./景点_images/直隶总督署/2.jpg">
+  <img src="./景点_images/直隶总督署/4.jpg">
+</div>
+
+<div class="baike">
+  <h1 class="baike-title">直隶总督署</h1>
+  <div class="info-box">
+    <h3>基本信息</h3>
+    <table>
+      <tr><td>名称</td><td>直隶总督署</td></tr>
+      <tr><td>地理位置</td><td>河北省保定市</td></tr>
+      <tr><td>始建年代</td><td>清雍正七年（1729年）</td></tr>
+      <tr><td>建筑规制</td><td>清代省级衙署</td></tr>
+      <tr><td>保护等级</td><td>全国重点文物保护单位</td></tr>
+      <tr><td>美誉</td><td>一座总督署，半部清史稿</td></tr>
+    </table>
+  </div>
+
+  <div class="summary">
+    直隶总督署位于河北省保定市，是清代直隶省最高军政长官的办公场所，
+    也是我国目前保存最完整的清代省级衙署。整座建筑群对称严谨、气势庄重，
+    见证了清代政治、军事、经济与文化的变迁，具有极高的历史与建筑价值。
+  </div>
+
+  <div class="catalog">
+    <h3>目录</h3>
+    <ul>
+      <li><a href="#part1">1 历史沿革</a></li>
+      <li><a href="#part2">2 建筑布局</a></li>
+      <li><a href="#part3">3 建筑特色</a></li>
+      <li><a href="#part4">4 历史价值</a></li>
+      <li><a href="#part5">5 保护与现状</a></li>
+    </ul>
+  </div>
+
+  <div class="chapter" id="part1">
+    <h2>历史沿革</h2>
+    <p>直隶总督署始建于清雍正七年（1729 年），建成后一直作为直隶总督办公起居之所。
+    清朝期间，先后有 74 人、99 任总督在此任职，包括曾国藩、李鸿章、袁世凯等重要人物。</p>
+    <p>民国时期，这里曾作为多种机构驻地；新中国成立后逐步修缮并对外开放，成为重要文化地标。</p>
+  </div>
+
+  <div class="chapter" id="part2">
+    <h2>建筑布局</h2>
+    <p>总督署采用典型的北方官式衙署布局，中轴对称、多进院落，
+    依次为大门、仪门、大堂、二堂、官邸、上房等，层层递进、秩序井然。
+    建筑以硬山青瓦为主，色调庄重，体现清代官署规制。</p>
+  </div>
+
+  <div class="chapter" id="part3">
+    <h2>建筑特色</h2>
+    <p>整体风格肃穆规整，木构、瓦作、砖雕均体现清代官式建筑工艺。
+    建筑不尚华丽，而重威仪，符合衙署办公属性。
+    院内古柏参天，环境肃穆，历史氛围浓厚。</p>
+  </div>
+
+  <div class="chapter" id="part4">
+    <h2>历史价值</h2>
+    <p>直隶总督署是研究清代地方行政制度、官式建筑、政治史的重要实物例证。
+    因其历史地位与保存完整度，被誉为“一座总督署，半部清史稿”。</p>
+  </div>
+
+  <div class="chapter" id="part5">
+    <h2>保护与现状</h2>
+    <p>现为全国重点文物保护单位、国家 4A 级景区，
+    内部设有陈列展览，全面展示直隶总督制度与清代历史。</p>
+  </div>
+
+  <div class="btn-group">
+    <a href="jies.html" class="back">返回上一级</a>
+    <a href="index.html" class="back">返回首页</a>
+  </div>
+</div>
+
+</body>
+</html>
